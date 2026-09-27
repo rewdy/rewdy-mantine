@@ -1,0 +1,12 @@
+/* A translucent wash rather than a band tint: the band tints sit too close to
+   the page surface to read as a deliberate gesture at heading size. Mixed from
+   Mantine's own per-scheme accent text color, so it needs no custom variable and
+   re-tints in dark mode for free. */
+.root {
+  background-color: color-mix(in srgb, var(--mantine-color-violet-text) 20%, transparent);
+  /* A hair of breathing room around the stroke, and `clone` so the wash keeps
+     its edges if the highlighted phrase wraps across lines. */
+  padding-inline: 0.12em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}

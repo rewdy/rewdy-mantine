@@ -1,0 +1,133 @@
+.root {
+  width: 100%;
+  /* Bands are full-bleed and stack vertically; the hairline is the only
+     separator between them, matching the reference sites' section rhythm. */
+  border-bottom: var(--rwd-border-width) solid var(--rwd-border-color);
+  background-color: var(--band-bg);
+  background-repeat: repeat;
+  /* Both needed by the `wave` texture's overlay layer (see below): `relative`
+     to position it, `isolate` so its negative z-index puts it above the band's
+     background but still behind the content. */
+  position: relative;
+  isolation: isolate;
+}
+
+.root:last-child {
+  border-bottom: 0;
+}
+
+/* --- surface variants --- */
+.base {
+  --band-bg: var(--rwd-band-base);
+}
+.tint {
+  --band-bg: var(--rwd-band-tint);
+}
+.muted {
+  --band-bg: var(--rwd-band-muted);
+}
+
+/* The inverted band.
+ *
+ * `Band` also stamps `data-mantine-color-scheme="dark"` on this variant, which
+ * makes it a dark-scheme island: Mantine's component CSS is written as
+ * `[data-mantine-color-scheme='dark'] .m_xxx` descendant rules, so every nested
+ * surface switches to its dark treatment. Without that, a Card in a deep band
+ * paints itself white — Mantine's light surface rules use the literal white
+ * token, not --mantine-color-body — and then inherits this band's near-white
+ * text color, which makes the copy inside it invisible.
+ *
+ * Two groups of variables still have to be set by hand, because the data
+ * attribute only reaches the component rules, not the variable blocks (those are
+ * bound to `:root[data-mantine-color-scheme=…]`, which is still `light`):
+ *
+ * 1. the semantic tokens, which would otherwise resolve light;
+ * 2. the `dark` ramp's three surface steps, remapped to this band's steps so a
+ *    nested surface lands just above the band instead of on an unrelated shade.
+ *
+ * Note the deliberate omission: --mantine-color-white is left alone. It doubles
+ * as the inverse *text* color on filled controls, so rebinding it turns every
+ * filled button label in the band into dark-on-teal.
+ */
+.deep {
+  --band-bg: var(--rwd-band-deep);
+  --mantine-color-text: var(--rwd-band-deep-fg);
+  --mantine-color-dimmed: var(--rwd-band-deep-dim);
+  --mantine-color-bright: #ffffff;
+  --mantine-color-body: var(--rwd-band-deep);
+  --mantine-color-default: var(--rwd-band-deep-surface);
+  --mantine-color-default-hover: var(--rwd-band-deep-hover);
+  --mantine-color-default-color: var(--rwd-band-deep-fg);
+  --mantine-color-default-border: var(--rwd-band-deep-border);
+  --mantine-color-dark-5: var(--rwd-band-deep-hover);
+  --mantine-color-dark-6: var(--rwd-band-deep-surface);
+  --mantine-color-dark-7: var(--rwd-band-deep);
+  --rwd-border-color: var(--rwd-band-deep-border);
+  --rwd-border-strong: var(--rwd-band-deep-border);
+  /* The right texture ink depends on the band, not just the color scheme:
+     light-scheme ink on a deep band is near-white on near-black. */
+  --rwd-texture-wave: var(--rwd-band-deep-texture-wave);
+  --rwd-texture-dots: var(--rwd-band-deep-texture-dots);
+  --rwd-texture-hatch: var(--rwd-band-deep-texture-hatch);
+  color: var(--rwd-band-deep-fg);
+  border-bottom-color: var(--rwd-band-deep);
+}
+
+/* --- textures ---
+   Each reads --rwd-texture-* from the CSS variables resolver, so all three
+   recede correctly in dark mode and on deep bands instead of strobing over the
+   type. Never hardcode a texture color here.
+
+   The wave is the odd one out: it's an SVG data URI, and CSS can't interpolate
+   a var() inside url(). So instead of duplicating the path once per scheme with
+   the stroke baked in, the shape is used as a mask over a flat fill — one
+   definition, recolored by --rwd-texture-wave. That mask needs its own layer,
+   hence the pseudo-element. All three textures share the primary teal hue, but
+   the wave's ink is the lightest of the three because it sits under body copy. */
+.wave::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--rwd-texture-wave);
+  mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='20'%3E%3Cpath d='M-20.133 4.568C-13.178 4.932-6.452 7.376 0 10c6.452 2.624 13.036 5.072 20 5 6.967-.072 13.56-2.341 20-5 6.44-2.659 13.033-4.928 20-5 6.964-.072 13.548 2.376 20 5s13.178 5.068 20.133 5.432' stroke-width='1.5' stroke='%23000' fill='none'/%3E%3C/svg%3E");
+  mask-size: 60px 15px;
+  mask-repeat: repeat;
+}
+
+.dots {
+  background-image: radial-gradient(var(--rwd-texture-dots) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.hatch {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent 0 6px,
+    var(--rwd-texture-hatch) 6px 7px
+  );
+}
+
+/* --- vertical rhythm --- */
+.padXs {
+  padding-block: var(--mantine-spacing-lg);
+}
+.padSm {
+  padding-block: 56px;
+}
+.padMd {
+  padding-block: 88px;
+}
+.padLg {
+  padding-block: 120px;
+}
+
+@media (max-width: 48em) {
+  .padMd {
+    padding-block: 56px;
+  }
+  .padLg {
+    padding-block: 72px;
+  }
+}

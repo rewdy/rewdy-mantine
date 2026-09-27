@@ -1,0 +1,55 @@
+/*
+ * The editorial scale — opt-in, never inherited.
+ *
+ * This is the airy rewdy.lol setting (21px/1.65 with a touch of positive
+ * tracking). It's a wrapper rather than the theme default so a data table or
+ * form can never accidentally pick it up.
+ */
+.root {
+  font-size: 1.3125rem; /* 21px */
+  line-height: 1.65;
+  letter-spacing: 0.2px;
+  max-width: var(--prose-measure, var(--rwd-prose-measure));
+}
+
+/* `.root.root` (specificity 0,2,0) rather than `.root` — Mantine's Text sets
+   `margin: 0` from its own single class, and at equal specificity the winner
+   depends on stylesheet order, which we don't control. */
+.root.root > * + * {
+  margin-top: 1.1em;
+}
+
+/* The editorial scale has to be handed to Text explicitly. Text sets its own
+   font-size and line-height from a single class, and a class declaration beats
+   an inherited value outright — so without this the wrapper's 21px/1.65 reaches
+   only bare markup, and every <Text> child silently stays on the app scale.
+   Reading through --text-fz/--text-lh keeps an explicit `fz`/`lh` prop winning. */
+.root :global(.mantine-Text-root) {
+  font-size: var(--text-fz, inherit);
+  line-height: var(--text-lh, inherit);
+}
+
+/* `:is()` rather than `:where()` for the heading sizes below: Mantine's Title
+   class is also (0,1,0), so a zero-specificity selector only wins by stylesheet
+   order — which we don't control. The extra element in `:is()` settles it.
+   Editorial h1 scales with the viewport — hero type wants to be much larger
+   than the 44px app-scale h1. */
+.root :is(h1) {
+  letter-spacing: var(--rwd-display-tracking);
+  font-size: clamp(2.75rem, 6vw, 4.75rem);
+  line-height: 1.02;
+}
+
+.root :is(h2) {
+  letter-spacing: var(--rwd-display-tracking);
+  font-size: 2.5rem; /* 40 */
+  line-height: 1.08;
+}
+
+.root :where(p) {
+  margin-block: 0;
+}
+
+.full {
+  --prose-measure: none;
+}

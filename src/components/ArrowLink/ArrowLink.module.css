@@ -1,0 +1,26 @@
+/* The arrow trails the label and shifts on hover/focus — movement in the
+   affordance itself, never elevation. `inline-flex` with `baseline` alignment
+   keeps it sitting on the text baseline at any font size. */
+.root {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3em;
+}
+
+.arrow {
+  display: inline-block;
+  transition: transform 140ms ease;
+}
+
+.root:hover .arrow,
+.root:focus-visible .arrow {
+  transform: translateX(3px);
+}
+
+/* The shift is an instant state change, which reduced-motion permits; only the
+   animation between the two states is dropped. */
+@media (prefers-reduced-motion: reduce) {
+  .arrow {
+    transition: none;
+  }
+}

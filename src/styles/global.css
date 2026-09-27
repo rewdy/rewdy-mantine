@@ -1,0 +1,72 @@
+@import "@mantine/core/styles.css";
+
+/*
+ * Fonts are NOT bundled here. Load them alongside this file:
+ *   import "@rewdy/mantine/fonts.css";
+ * ...which pulls the self-hosted Fontsource builds. Swap it for your own
+ * @font-face rules if you'd rather supply the faces yourself.
+ */
+
+/*
+ * h3-h6 return to Karla — but not from here. A stylesheet rule can't win against
+ * Mantine's Title class without an escalating specificity hack, so the per-level
+ * font assignment lives in the `Title` override in theme/components.ts. This
+ * note stays because "why isn't it in the CSS?" is the obvious question.
+ */
+
+/* Fallback focus ring for bare elements. Mantine's own components bring their
+ * focus styles from higher-specificity classes; this happens to match them, and
+ * covers plain markup that isn't a Mantine component. */
+:where(a, button, [tabindex]):focus-visible {
+  outline: 2px solid var(--mantine-color-primary-filled);
+  outline-offset: 2px;
+}
+
+/* Selection is the `success` family, deliberately not magenta: it's on screen
+ * the entire time you're editing, and a rationed accent can't take that. */
+::selection {
+  background-color: var(--rwd-selection-bg);
+  color: var(--rwd-selection-ink);
+}
+
+/* Flat and square means press feedback has to come from somewhere other than
+   shadow — a 1px nudge reads as physical without adding elevation. */
+:where(.mantine-Button-root):active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* Filled buttons get a small, silly lean on hover: a hair of scale and a
+ * sub-degree rotation, flipped in sign every other button so a row doesn't move
+ * as one. Scoped to filled only — a form with a stack of buttons shouldn't
+ * wobble, and outline/subtle variants live in denser places.
+ *
+ * `:not([data-variant])` is how a filled button reads here: Mantine only emits
+ * the attribute when a variant is passed, so the default case has none. */
+:is(.mantine-Button-root):not([data-variant]),
+:is(.mantine-Button-root)[data-variant="filled"] {
+  transition: transform 140ms cubic-bezier(0.2, 0.9, 0.3, 1.4);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  :is(.mantine-Button-root):not([data-variant]):hover:not(:disabled),
+  :is(.mantine-Button-root)[data-variant="filled"]:hover:not(:disabled) {
+    transform: scale(1.03) rotate(-0.6deg);
+  }
+
+  :is(.mantine-Button-root):not([data-variant]):nth-child(even):hover:not(:disabled),
+  :is(.mantine-Button-root)[data-variant="filled"]:nth-child(even):hover:not(:disabled) {
+    transform: scale(1.03) rotate(0.6deg);
+  }
+}
+
+/* Press wins over the hover lean — otherwise holding a filled button pins it in
+ * the tilted state and the press nudge never lands. Same specificity as the
+ * hover rules, placed after them. */
+:is(.mantine-Button-root):not([data-variant]):active:not(:disabled),
+:is(.mantine-Button-root)[data-variant="filled"]:active:not(:disabled) {
+  transform: translateY(1px) scale(0.99);
+}
+
+body {
+  background-color: var(--rwd-band-base);
+}
